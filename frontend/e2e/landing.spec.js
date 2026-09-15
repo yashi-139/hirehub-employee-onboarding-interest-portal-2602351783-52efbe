@@ -19,10 +19,10 @@ test('landing page presents discovery content and both calls to action navigate 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Build Your Future With Us' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Why Join Us?' })).toBeVisible();
-  await expect(page.getByText('Innovation')).toBeVisible();
-  await expect(page.getByText('Career Growth')).toBeVisible();
-  await expect(page.getByText('Great Culture')).toBeVisible();
-  await expect(page.getByText('Global Impact')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Innovation' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Career Growth' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Great Culture' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Global Impact' })).toBeVisible();
 
   await page.getByRole('link', { name: 'Express Your Interest' }).click();
   await expect(page).toHaveURL(/\/apply$/);
