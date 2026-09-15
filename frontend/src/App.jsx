@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import InterestForm from './pages/InterestForm';
+import AdminDashboard from './pages/AdminDashboard';
 
 /** Renders the persistent site shell and currently available application routes. */
 function App() {
@@ -13,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/apply" element={<InterestForm />} />
-          <Route path="/admin" element={<p>Administrator access coming soon.</p>} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </main>
     </div>

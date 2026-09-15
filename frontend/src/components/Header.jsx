@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
@@ -19,10 +19,20 @@ function Header({ initialAuthenticated = undefined }) {
     initialAuthenticated ?? getAdminAuthentication(),
   );
 
+  useEffect(() => {
+    /** Synchronize this persistent header after local administrator session changes. */
+    function syncAuthentication() {
+      setIsAuthenticated(getAdminAuthentication());
+    }
+
+    window.addEventListener('hirehub-admin-auth-change', syncAuthentication);
+    return () => window.removeEventListener('hirehub-admin-auth-change', syncAuthentication);
+  }, []);
+
   /** Clears the demo administrator session and returns the visitor to the home route. */
   function handleLogout() {
     sessionStorage.removeItem('hirehub_admin_auth');
-    setIsAuthenticated(false);
+    window.dispatchEvent(new Event('hirehub-admin-auth-change'));
     navigate('/');
   }
 
