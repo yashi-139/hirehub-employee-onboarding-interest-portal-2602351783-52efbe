@@ -283,6 +283,142 @@ button {
   }
 }
 
+.interest-page {
+  width: min(100% - 48px, 600px);
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.interest-card {
+  padding: 32px;
+  border-radius: 12px;
+  background: var(--color-card);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.interest-heading {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.interest-heading h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+.interest-heading p {
+  margin: 8px 0 0;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.interest-form {
+  display: grid;
+  gap: 20px;
+}
+
+.form-field {
+  display: grid;
+  gap: 8px;
+}
+
+.form-field label {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-card);
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.form-field input[aria-invalid='true'],
+.form-field select[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.field-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.form-success {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-success);
+  border-radius: 8px;
+  background: var(--color-card);
+  color: var(--color-success);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.submit-application {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  transition: background-color 160ms ease-out;
+}
+
+.submit-application:hover,
+.submit-application:focus-visible {
+  background: var(--color-primary-hover);
+}
+
+.back-home-link {
+  display: block;
+  width: fit-content;
+  margin: 24px auto 0;
+  color: var(--color-primary);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-home-link:hover,
+.back-home-link:focus-visible {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+  .interest-page {
+    width: min(100% - 40px, 600px);
+    padding: 32px 0 48px;
+  }
+
+  .interest-card {
+    padding: 20px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
