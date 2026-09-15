@@ -26,7 +26,9 @@ function EditModal({ submission, onClose, onSave }) {
         return;
       }
       if (event.key !== 'Tab' || !dialogRef.current) return;
-      const focusable = dialogRef.current.querySelectorAll('button, input, select, [tabindex]:not([tabindex="-1"])');
+      const focusable = dialogRef.current.querySelectorAll(
+        'button, input, select, [tabindex]:not([tabindex="-1"])',
+      );
       const items = Array.from(focusable).filter((element) => !element.disabled);
       if (items.length === 0) return;
       const first = items[0];
@@ -68,7 +70,11 @@ function EditModal({ submission, onClose, onSave }) {
       setErrors(editableErrors);
       return;
     }
-    onSave({ fullName: values.fullName.trim(), mobile: values.mobile, department: values.department });
+    onSave({
+      fullName: values.fullName.trim(),
+      mobile: values.mobile,
+      department: values.department,
+    });
   }
 
   /** Close only when the click originates from the overlay itself. */
@@ -78,34 +84,94 @@ function EditModal({ submission, onClose, onSave }) {
 
   return (
     <div className="admin-modal-overlay" onMouseDown={handleOverlayClick}>
-      <div className="admin-modal" role="dialog" aria-modal="true" aria-labelledby="edit-submission-title" ref={dialogRef} tabIndex="-1">
+      <div
+        className="admin-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-submission-title"
+        ref={dialogRef}
+        tabIndex="-1"
+      >
         <h2 id="edit-submission-title">Edit Submission</h2>
         <form className="admin-edit-form" onSubmit={handleSubmit} noValidate>
           <div className="form-field">
             <label htmlFor="edit-fullName">Full Name</label>
-            <input id="edit-fullName" name="fullName" value={values.fullName} onChange={handleChange} aria-invalid={Boolean(errors.fullName)} aria-describedby={errors.fullName ? 'edit-fullName-error' : undefined} />
-            {errors.fullName && <p id="edit-fullName-error" className="field-error" role="alert">{errors.fullName}</p>}
+            <input
+              id="edit-fullName"
+              name="fullName"
+              value={values.fullName}
+              onChange={handleChange}
+              aria-invalid={Boolean(errors.fullName)}
+              aria-describedby={errors.fullName ? 'edit-fullName-error' : undefined}
+            />
+            {errors.fullName && (
+              <p id="edit-fullName-error" className="field-error" role="alert">
+                {errors.fullName}
+              </p>
+            )}
           </div>
           <div className="form-field">
             <label htmlFor="edit-email">Email Address</label>
-            <input id="edit-email" name="email" type="email" value={values.email} disabled readOnly />
+            <input
+              id="edit-email"
+              name="email"
+              type="email"
+              value={values.email}
+              disabled
+              readOnly
+            />
           </div>
           <div className="form-field">
             <label htmlFor="edit-mobile">Mobile Number</label>
-            <input id="edit-mobile" name="mobile" value={values.mobile} onChange={handleChange} inputMode="numeric" aria-invalid={Boolean(errors.mobile)} aria-describedby={errors.mobile ? 'edit-mobile-error' : undefined} />
-            {errors.mobile && <p id="edit-mobile-error" className="field-error" role="alert">{errors.mobile}</p>}
+            <input
+              id="edit-mobile"
+              name="mobile"
+              value={values.mobile}
+              onChange={handleChange}
+              inputMode="numeric"
+              aria-invalid={Boolean(errors.mobile)}
+              aria-describedby={errors.mobile ? 'edit-mobile-error' : undefined}
+            />
+            {errors.mobile && (
+              <p id="edit-mobile-error" className="field-error" role="alert">
+                {errors.mobile}
+              </p>
+            )}
           </div>
           <div className="form-field">
             <label htmlFor="edit-department">Department of Interest</label>
-            <select id="edit-department" name="department" value={values.department} onChange={handleChange} aria-invalid={Boolean(errors.department)} aria-describedby={errors.department ? 'edit-department-error' : undefined}>
+            <select
+              id="edit-department"
+              name="department"
+              value={values.department}
+              onChange={handleChange}
+              aria-invalid={Boolean(errors.department)}
+              aria-describedby={errors.department ? 'edit-department-error' : undefined}
+            >
               <option value="">Select a department</option>
-              {DEPARTMENTS.map((department) => <option key={department} value={department}>{department}</option>)}
+              {DEPARTMENTS.map((department) => (
+                <option key={department} value={department}>
+                  {department}
+                </option>
+              ))}
             </select>
-            {errors.department && <p id="edit-department-error" className="field-error" role="alert">{errors.department}</p>}
+            {errors.department && (
+              <p id="edit-department-error" className="field-error" role="alert">
+                {errors.department}
+              </p>
+            )}
           </div>
           <div className="dialog-actions">
-            <button type="button" className="admin-secondary-button" onClick={onClose}>Cancel</button>
-            <button type="submit" className="admin-primary-button">Save Changes</button>
+            <button
+              type="button"
+              className="admin-secondary-button"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="admin-primary-button">
+              Save Changes
+            </button>
           </div>
         </form>
       </div>
@@ -114,7 +180,12 @@ function EditModal({ submission, onClose, onSave }) {
 }
 
 EditModal.propTypes = {
-  submission: PropTypes.shape({ fullName: PropTypes.string.isRequired, email: PropTypes.string.isRequired, mobile: PropTypes.string.isRequired, department: PropTypes.string.isRequired }).isRequired,
+  submission: PropTypes.shape({
+    fullName: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    mobile: PropTypes.string.isRequired,
+    department: PropTypes.string.isRequired,
+  }).isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
 };

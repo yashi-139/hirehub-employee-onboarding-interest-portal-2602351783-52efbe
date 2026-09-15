@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
@@ -68,6 +68,43 @@ describe('AdminDashboard', () => {
     await user.click(screen.getByRole('button', { name: 'Save Changes' }));
     expect(screen.getByText('Ava Jones')).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem(SUBMISSIONS_STORAGE_KEY))[0].fullName).toBe('Ava Jones');
+  });
+
+  it('closes the edit dialog with Escape and only closes on a backdrop click', async () => {
+    const user = userEvent.setup();
+    signInSession();
+    localStorage.setItem(SUBMISSIONS_STORAGE_KEY, JSON.stringify(records));
+    renderDashboard();
+
+    await user.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog', { name: 'Edit Submission' })).not.toBeInTheDocument();
+
+    await user.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
+    const dialog = screen.getByRole('dialog', { name: 'Edit Submission' });
+    await user.click(dialog);
+    expect(dialog).toBeInTheDocument();
+    fireEvent.mouseDown(dialog.parentElement);
+    expect(screen.queryByRole('dialog', { name: 'Edit Submission' })).not.toBeInTheDocument();
+  });
+
+  it('wraps edit-dialog focus in both Tab directions', async () => {
+    const user = userEvent.setup();
+    signInSession();
+    localStorage.setItem(SUBMISSIONS_STORAGE_KEY, JSON.stringify(records));
+    renderDashboard();
+
+    await user.click(screen.getAllByRole('button', { name: 'Edit' })[0]);
+    const dialog = screen.getByRole('dialog', { name: 'Edit Submission' });
+    const fullName = within(dialog).getByLabelText('Full Name');
+    const saveChanges = within(dialog).getByRole('button', { name: 'Save Changes' });
+
+    fullName.focus();
+    await user.tab({ shift: true });
+    expect(saveChanges).toHaveFocus();
+
+    await user.tab();
+    expect(fullName).toHaveFocus();
   });
 
   it('requires in-app confirmation before deleting a persisted submission', async () => {

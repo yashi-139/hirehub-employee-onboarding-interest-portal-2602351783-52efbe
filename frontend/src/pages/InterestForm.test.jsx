@@ -60,13 +60,28 @@ describe('InterestForm', () => {
     expect(localStorage.getItem(SUBMISSIONS_STORAGE_KEY)).toBeNull();
   });
 
-  it('persists a full valid record, clears values, and presents the exact success message', async () => {
-    const user = userEvent.setup();
+  it('shows an accessible submitting state, then persists a full valid record and presents the exact success message', async () => {
+    vi.useFakeTimers();
     renderForm();
-    await fillValidForm(user);
+    fireEvent.change(screen.getByLabelText('Full Name'), { target: { value: 'Ava Smith' } });
+    fireEvent.change(screen.getByLabelText('Email Address'), { target: { value: 'ava@example.com' } });
+    fireEvent.change(screen.getByLabelText('Mobile Number'), { target: { value: '1234567890' } });
+    fireEvent.change(screen.getByLabelText('Department of Interest'), {
+      target: { value: 'Engineering' },
+    });
 
-    await user.click(screen.getByRole('button', { name: 'Submit Application' }));
+    fireEvent.submit(screen.getByRole('button', { name: 'Submit Application' }).closest('form'));
 
+    const submittingButton = screen.getByRole('button', { name: 'Submitting application' });
+    expect(submittingButton).toBeDisabled();
+    expect(submittingButton).toHaveAttribute('aria-busy', 'true');
+    expect(localStorage.getItem(SUBMISSIONS_STORAGE_KEY)).toBeNull();
+
+    await act(async () => {
+      vi.advanceTimersByTime(0);
+    });
+
+    expect(screen.getByRole('button', { name: 'Submit Application' })).toBeEnabled();
     expect(
       screen.getByRole('status', { name: 'Thank you! Your interest has been submitted successfully.' }),
     ).toBeInTheDocument();
@@ -123,6 +138,9 @@ describe('InterestForm', () => {
     });
     fireEvent.submit(screen.getByRole('button', { name: 'Submit Application' }).closest('form'));
 
+    await act(async () => {
+      vi.advanceTimersByTime(0);
+    });
     expect(screen.getByRole('status')).toBeInTheDocument();
     await act(async () => {
       vi.advanceTimersByTime(3999);

@@ -53,10 +53,11 @@ describe('LandingPage', () => {
     expect(screen.getByRole('link', { name: 'Login' })).toBeInTheDocument();
   });
 
-  it('renders the temporary apply route through the persistent application shell', () => {
+  it('renders the application form route through the persistent application shell', () => {
     renderWithRouter(<App />, ['/apply']);
 
-    expect(screen.getByText('Application form coming soon.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Join Our Team' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Submit Application' })).toBeInTheDocument();
     expect(screen.getByRole('banner')).toBeInTheDocument();
   });
 });

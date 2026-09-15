@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { addSubmission, isEmailDuplicate } from '../utils/storage';
 import { DEPARTMENTS, hasValidationErrors, validateSubmission } from '../utils/validators';
@@ -39,6 +39,8 @@ function InterestForm() {
   const [values, setValues] = useState(INITIAL_VALUES);
   const [errors, setErrors] = useState(INITIAL_ERRORS);
   const [successMessage, setSuccessMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const submitTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (!successMessage) {
@@ -48,6 +50,12 @@ function InterestForm() {
     const timeoutId = window.setTimeout(() => setSuccessMessage(''), 4000);
     return () => window.clearTimeout(timeoutId);
   }, [successMessage]);
+
+  useEffect(() => () => {
+    if (submitTimeoutRef.current !== null) {
+      window.clearTimeout(submitTimeoutRef.current);
+    }
+  }, []);
 
   /**
    * Keep form values in sync with a changed native control.
@@ -62,7 +70,40 @@ function InterestForm() {
   }
 
   /**
-   * Validate and persist the candidate's application.
+   * Persist the already-validated candidate application after its brief submitting state.
+   *
+   * @param {{ fullName: string, email: string, mobile: string, department: string }} submission - Valid submission values.
+   * @returns {void}
+   */
+  function completeSubmission(submission) {
+    const saved = addSubmission({
+      id: createSubmissionId(),
+      fullName: submission.fullName.trim(),
+      email: submission.email.trim(),
+      mobile: submission.mobile,
+      department: submission.department,
+      submittedAt: new Date().toISOString(),
+    });
+
+    setSubmitting(false);
+    submitTimeoutRef.current = null;
+
+    if (!saved) {
+      setErrors((currentErrors) => ({
+        ...currentErrors,
+        email: 'This email has already been submitted.',
+      }));
+      setSuccessMessage('');
+      return;
+    }
+
+    setValues(INITIAL_VALUES);
+    setErrors(INITIAL_ERRORS);
+    setSuccessMessage('Thank you! Your interest has been submitted successfully.');
+  }
+
+  /**
+   * Validate and schedule persistence of the candidate's application.
    *
    * @param {React.FormEvent<HTMLFormElement>} event - Form submission event.
    * @returns {void}
@@ -87,27 +128,10 @@ function InterestForm() {
       return;
     }
 
-    const saved = addSubmission({
-      id: createSubmissionId(),
-      fullName: values.fullName.trim(),
-      email: normalizedEmail,
-      mobile: values.mobile,
-      department: values.department,
-      submittedAt: new Date().toISOString(),
-    });
-
-    if (!saved) {
-      setErrors((currentErrors) => ({
-        ...currentErrors,
-        email: 'This email has already been submitted.',
-      }));
-      setSuccessMessage('');
-      return;
-    }
-
-    setValues(INITIAL_VALUES);
-    setErrors(INITIAL_ERRORS);
-    setSuccessMessage('Thank you! Your interest has been submitted successfully.');
+    setSubmitting(true);
+    submitTimeoutRef.current = window.setTimeout(() => {
+      completeSubmission({ ...values, email: normalizedEmail });
+    }, 0);
   }
 
   /**
@@ -221,8 +245,14 @@ function InterestForm() {
             )}
           </div>
 
-          <button className="submit-application" type="submit">
-            Submit Application
+          <button
+            className="submit-application"
+            type="submit"
+            disabled={submitting}
+            aria-busy={submitting}
+            aria-label={submitting ? 'Submitting application' : undefined}
+          >
+            {submitting ? 'Submitting…' : 'Submit Application'}
           </button>
         </form>
 

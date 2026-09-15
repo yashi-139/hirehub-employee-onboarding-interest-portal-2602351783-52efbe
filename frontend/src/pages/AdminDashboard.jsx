@@ -33,7 +33,9 @@ function DeleteConfirmation({ onCancel, onConfirm }) {
         return;
       }
       if (event.key !== 'Tab' || !dialogRef.current) return;
-      const items = Array.from(dialogRef.current.querySelectorAll('button')).filter((element) => !element.disabled);
+      const items = Array.from(dialogRef.current.querySelectorAll('button')).filter(
+        (element) => !element.disabled,
+      );
       if (items.length === 0) return;
       if (event.shiftKey && document.activeElement === items[0]) {
         event.preventDefault();
@@ -59,12 +61,31 @@ function DeleteConfirmation({ onCancel, onConfirm }) {
 
   return (
     <div className="admin-modal-overlay" onMouseDown={handleOverlayClick}>
-      <div className="admin-modal confirmation-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-confirmation-title" ref={dialogRef} tabIndex="-1">
+      <div
+        className="admin-modal confirmation-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-confirmation-title"
+        ref={dialogRef}
+        tabIndex="-1"
+      >
         <h2 id="delete-confirmation-title">Delete Submission</h2>
         <p>Are you sure you want to delete this submission?</p>
         <div className="dialog-actions">
-          <button type="button" className="admin-secondary-button" onClick={onCancel}>Cancel</button>
-          <button type="button" className="admin-danger-button" onClick={onConfirm}>Delete</button>
+          <button
+            type="button"
+            className="admin-secondary-button"
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="admin-danger-button"
+            onClick={onConfirm}
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>
@@ -85,9 +106,17 @@ function AdminDashboard() {
   const [deletingSubmission, setDeletingSubmission] = useState(null);
 
   const stats = useMemo(() => {
-    const dates = submissions.map((submission) => new Date(submission.submittedAt)).filter((date) => !Number.isNaN(date.getTime()));
-    const latest = dates.length ? new Date(Math.max(...dates.map((date) => date.getTime()))).toISOString() : '';
-    return { total: submissions.length, departments: new Set(submissions.map((submission) => submission.department)).size, latest };
+    const dates = submissions
+      .map((submission) => new Date(submission.submittedAt))
+      .filter((date) => !Number.isNaN(date.getTime()));
+    const latest = dates.length
+      ? new Date(Math.max(...dates.map((date) => date.getTime()))).toISOString()
+      : '';
+    return {
+      total: submissions.length,
+      departments: new Set(submissions.map((submission) => submission.department)).size,
+      latest,
+    };
   }, [submissions]);
 
   /** End the local admin session, synchronize the header, and return home. */
@@ -100,7 +129,9 @@ function AdminDashboard() {
   /** Persist a valid edit and immediately reflect it in the rendered table. */
   function handleSave(updates) {
     if (updateSubmission(editingSubmission.id, updates)) {
-      setSubmissions((current) => current.map((item) => (item.id === editingSubmission.id ? { ...item, ...updates } : item)));
+      setSubmissions((current) => current.map((item) => (
+        item.id === editingSubmission.id ? { ...item, ...updates } : item
+      )));
     }
     setEditingSubmission(null);
   }
@@ -113,7 +144,9 @@ function AdminDashboard() {
     setDeletingSubmission(null);
   }
 
-  if (!authenticated) return <AdminLogin onAuthenticated={() => setAuthenticated(true)} />;
+  if (!authenticated) {
+    return <AdminLogin onAuthenticated={() => setAuthenticated(true)} />;
+  }
 
   return (
     <section className="admin-dashboard" aria-labelledby="dashboard-title">
@@ -122,19 +155,49 @@ function AdminDashboard() {
           <p className="dashboard-kicker">Candidate pipeline</p>
           <h1 id="dashboard-title">Submissions Dashboard</h1>
         </div>
-        <button className="admin-logout-button" type="button" onClick={handleLogout}>Logout</button>
+        <button
+          className="admin-logout-button"
+          type="button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
       <div className="dashboard-stats" aria-label="Submission summary">
-        <article className="stat-card"><span>Total Submissions</span><strong>{stats.total}</strong></article>
-        <article className="stat-card"><span>Departments</span><strong>{stats.departments}</strong></article>
-        <article className="stat-card"><span>Latest Submission</span><strong>{stats.latest ? formatSubmissionDate(stats.latest) : 'N/A'}</strong></article>
+        <article className="stat-card">
+          <span>Total Submissions</span>
+          <strong>{stats.total}</strong>
+        </article>
+        <article className="stat-card">
+          <span>Departments</span>
+          <strong>{stats.departments}</strong>
+        </article>
+        <article className="stat-card">
+          <span>Latest Submission</span>
+          <strong>{stats.latest ? formatSubmissionDate(stats.latest) : 'N/A'}</strong>
+        </article>
       </div>
       <section className="submissions-section" aria-labelledby="submissions-table-title">
         <h2 id="submissions-table-title">All Submissions</h2>
-        <SubmissionTable submissions={submissions} onEdit={setEditingSubmission} onDelete={setDeletingSubmission} />
+        <SubmissionTable
+          submissions={submissions}
+          onEdit={setEditingSubmission}
+          onDelete={setDeletingSubmission}
+        />
       </section>
-      {editingSubmission && <EditModal submission={editingSubmission} onClose={() => setEditingSubmission(null)} onSave={handleSave} />}
-      {deletingSubmission && <DeleteConfirmation onCancel={() => setDeletingSubmission(null)} onConfirm={handleConfirmDelete} />}
+      {editingSubmission && (
+        <EditModal
+          submission={editingSubmission}
+          onClose={() => setEditingSubmission(null)}
+          onSave={handleSave}
+        />
+      )}
+      {deletingSubmission && (
+        <DeleteConfirmation
+          onCancel={() => setDeletingSubmission(null)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </section>
   );
 }
